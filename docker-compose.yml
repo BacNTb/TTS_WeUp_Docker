@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  php:
+    image: 'laravel'
+    container_name: laravel
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8080:80
+      - 8082:80
+      - 8085:80
+    volumes:
+      - ./:/var/www/html
+
+  nginx:
+    image: 'nginx'
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./:/var/www/html"
+      - "./docker/config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "false"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "laravel"
+    volumes:
+      - "./db:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - '8081:80'
+    environment:
+      PMA_HOST: mysql
+
